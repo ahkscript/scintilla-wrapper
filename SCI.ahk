@@ -1,4 +1,4 @@
-﻿; Title: Scintilla Wrapper for AHK
+; Title: Scintilla Wrapper for AHK
 
 class scintilla {
     hwnd            := 0        ; Component Handle
@@ -49,15 +49,8 @@ class scintilla {
             __SCI(this.hwnd := __Add(wParam, lParam, params*), this)
         else
         {
-            static _MsgWithInputStringParam:={addtext:2,appendtext:2,changeinsertion:2,clearrepresentation:1,describeproperty:1,encodedfromutf8:1,getproperty:1,getpropertyexpanded:1,getpropertyint:1,getrepresentation:1,inserttext:2,propertytype:1,registerimage:2,registerrgbaimage:2,setidentifiers:2,setproperty:3,setpunctuationchars:2,setrepresentation:3,settext:2,setwhitespacechars:2,setwordchars:2,textwidth:2}
+            static _MsgWithInputStringParam:={addtext:2,appendtext:2,changeinsertion:2,clearrepresentation:1,describeproperty:1,encodedfromutf8:1,getproperty:1,getpropertyexpanded:1,getpropertyint:1,getrepresentation:1,inserttext:2,propertytype:1,registerimage:2,registerrgbaimage:2,SearchInTarget:2,setidentifiers:2,setkeywords:2,setproperty:3,setpunctuationchars:2,setrepresentation:3,settext:2,setwhitespacechars:2,setwordchars:2,textwidth:2}
             
-            (wParam && (_MsgWithInputStringParam[msg] & 0x1) && !isObject(wParam)) ? ( VarSetCapacity(wParamA, StrPut(wParam, scintilla.encoding))
-                                                       ,StrPut(wParam, &wParamA, scintilla.encoding)
-                                                       ,wParam:=&wParamA) : null,
-            
-            (lParam && (_MsgWithInputStringParam[msg] & 0x2) && !isObject(lParam)) ? ( VarSetCapacity(lParamA, StrPut(lParam, scintilla.encoding))
-                                                       ,StrPut(lParam, &lParamA, scintilla.encoding)
-                                                       ,lParam:=&lParamA) : null
                                                        
             /*
               Special Operations
@@ -327,7 +320,21 @@ __sendEditor(hwnd, msg=0, wParam=0, lParam=0){
         SendMessage, SCI_GETDIRECTPOINTER,0,0,,ahk_id %hwnd%
         %hwnd%_dp := ErrorLevel
 	}
-
+    
+    if !((wparam+0)&&StrLen(wparam))
+    {
+        VarSetCapacity(wParamA, StrPut(wParam, scintilla.encoding))
+        StrPut(wParam, &wParamA, scintilla.encoding)
+        wParam:=&wParamA
+    }
+    
+    if !((lparam+0)&&StrLen(lparam))
+    {
+        VarSetCapacity(lparamA, StrPut(lparam, scintilla.encoding))
+        StrPut(lparam, &lparamA, scintilla.encoding)
+        lparam:=&lparamA
+    }
+    
     if !msg && !wParam && !lParam   ; called only with the hwnd param from SCI_Add
         return                      ; Exit because we did what we needed to do already.
 
